@@ -1,0 +1,11 @@
+.{
+    .name = "png2dat",
+    .paths = .{""},
+    .version = "0.0.0",
+    .dependencies = .{
+        .zigimg = .{
+            .url = "https://github.com/zigimg/zigimg/archive/368658a.tar.gz",
+            .hash = "12201a74c6aa44832f8eac3e4a0e92e7bb7f3d6a12777f517fd470d7f6643cdc33fc",
+        },
+    },
+}

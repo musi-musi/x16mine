@@ -5,7 +5,7 @@
 
 keyboard {
 
-    bool[8] key_status 
+    bool[8] @shared key_status 
 
     const ubyte key_w = 0
     const ubyte key_a = 1

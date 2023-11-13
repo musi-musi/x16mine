@@ -1,34 +1,27 @@
 %import syslib
 %import vera
+%import util
 
 level {
 
-    const ubyte width_bits = 6
-    const ubyte width = 1 << width_bits
+    const ubyte room_width = 40
+    const ubyte room_height = 25
 
-    const ubyte tiles_page = $04
+    const ubyte tiles_page = $08
 
 
-    ; ubyte[width * width]
     const uword tiles = $a000
 
 
     sub init() {
-        cbm.SETLFS(4, 8, 0)
-        cbm.SETNAM(9, "level.dat")
-        setBank()
-        void cbm.LOAD(0, tiles)
+        bankRoom(0)
+        util.loadFile("level.dat", tiles);
         return
     }
 
-    sub setBank() {
-        @(0) = tiles_page
+    sub bankRoom(ubyte room) {
+        cx16.rambank(tiles_page + room)
         return
     }
-
-
-
-    ubyte tile_x = 0
-    ubyte tile_y = 0
 
 }

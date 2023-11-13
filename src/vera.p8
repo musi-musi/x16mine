@@ -9,6 +9,7 @@ vera {
     &ubyte ien = reg_base + $06
     &ubyte isr = reg_base + $07
     &ubyte irq_line_l = reg_base + $08
+    &ubyte scanline_l = reg_base + $08
     
     ; dcsel = 0
     &ubyte dc_video = reg_base + $09
@@ -25,14 +26,14 @@ vera {
     &ubyte l0_config = reg_base + $0d
     &ubyte l0_mapbase = reg_base + $0e
     &ubyte l0_tilebase = reg_base + $0f
-    &uword l0_hscroll = reg_base + $10
-    &uword l0_vscroll = reg_base + $12
+    &word l0_hscroll = reg_base + $10
+    &word l0_vscroll = reg_base + $12
 
     &ubyte l1_config = reg_base + $14
     &ubyte l1_mapbase = reg_base + $15
     &ubyte l1_tilebase = reg_base + $16
-    &uword l1_hscroll = reg_base + $17
-    &uword l1_vscroll = reg_base + $19
+    &word l1_hscroll = reg_base + $17
+    &word l1_vscroll = reg_base + $19
 
     const ubyte tile_1bpp = 0
     const ubyte bmp_1bpp = 0 + %0100
@@ -86,9 +87,36 @@ vera {
     const ubyte decr_320 = (14 << 4) + %1000
     const ubyte decr_640 = (15 << 4) + %1000
 
+    const ubyte enable_layer0 = 16
+    const ubyte enable_layer1 = 32
+    const ubyte enable_sprites = 64
+    const ubyte disable_all = 15
+
+    const ubyte video_vga = 1
+
+    const ubyte ien_vsync = 1
+    const ubyte ien_line = 2
+
     sub setAddress(uword address, ubyte incr) {
         addr = address
         addr_h = incr
+    }
+
+    sub setDcsel(ubyte dcsel) {
+        ctrl = dcsel << 1
+    }
+
+    sub setHstart(uword hstart) {
+        dc_hstart = (hstart >> 2) as ubyte
+    }
+    sub setHstop(uword hstop) {
+        dc_hstop = (hstop >> 2) as ubyte
+    }
+    sub setVstart(uword vstart) {
+        dc_vstart = (vstart >> 1) as ubyte
+    }
+    sub setVstop(uword vstop) {
+        dc_vstop = (vstop >> 1) as ubyte
     }
 
     sub configLayer0(ubyte width, ubyte height, ubyte color) {
@@ -102,5 +130,24 @@ vera {
 
     sub setTileBase0(ubyte width, ubyte height, uword address) {
         l0_tilebase = width + (height << 1) + (((address >> 9) as ubyte) & %11111100)
+    }
+
+    sub getScanline() -> uword {
+        uword scanline = scanline_l as uword
+        if ien & 64 {
+            scanline += 256
+        }
+        return scanline
+    }
+
+    sub setIrqLine(uword line)  {
+        scanline_l = (line & 255) as ubyte
+        if (line < 128) {
+            ien &= $7f
+        }
+        else {
+            ien |= $80
+        }
+        return 
     }
 }
