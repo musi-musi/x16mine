@@ -11,11 +11,11 @@ player {
     word[2] position = [(12 * 256) + 128, (5 * 256) + 128]
 
     const uword speed = 32
-    const ubyte radius = 80
+    const ubyte radius = 64
 
     const uword sprite_base = $a000
 
-    const uword sprite_pos_offset = 16
+    const uword sprite_pos_offset = 7
 
     sprite_data:
         %asmbinary "player_sprite.dat"
@@ -35,7 +35,7 @@ player {
         vera.setSpriteXY((position[0] >> 4) - sprite_pos_offset)
         vera.setSpriteXY((position[1] >> 4) - sprite_pos_offset)
         vera.setSpriteConfig(0, 3)
-        vera.setSpriteSizePalette(vera.sprite_32, vera.sprite_32, 3)
+        vera.setSpriteSizePalette(vera.sprite_16, vera.sprite_16, 3)
 
     }
 
