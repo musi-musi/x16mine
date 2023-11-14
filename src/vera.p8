@@ -102,6 +102,11 @@ vera {
         addr_h = incr
     }
 
+    sub setAddressHi(uword address, ubyte incr) {
+        addr = address
+        addr_h = incr + 1
+    }
+
     sub setDcsel(ubyte dcsel) {
         ctrl = dcsel << 1
     }
@@ -142,7 +147,7 @@ vera {
 
     sub setIrqLine(uword line)  {
         scanline_l = (line & 255) as ubyte
-        if (line < 128) {
+        if (line < 256) {
             ien &= $7f
         }
         else {
