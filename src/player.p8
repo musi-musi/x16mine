@@ -15,7 +15,7 @@ player {
 
     const uword sprite_base = $a000
 
-    const uword sprite_pos_offset = 7
+    const uword sprite_pos_offset = 8
 
     sprite_data:
         %asmbinary "player_sprite.dat"
@@ -53,25 +53,36 @@ player {
         setTilePos()
 
         if checkTile() != 0 {
-            position[axis] -= distance
+            goto collision
         }
         else {
             ubyte norm = axis ^ 1
             if (position[norm] & $ff) as ubyte < radius {
                 tile_pos[norm] -= 1
                 if checkTile() != 0 {
-                    position[axis] -= distance
+                    goto collision
                 }
             }
             else if (position[norm] & $ff) as ubyte >= (255 - radius) {
                 tile_pos[norm] += 1
                 if checkTile() != 0 {
-                    position[axis] -= distance
+                    goto collision
                 }
             }
         }
+        goto end
+
+    collision:
+        position[axis] -= distance
+        if distance > 0 {
+            position[axis] = (position[axis] & $ff00 as word) + $00f0
+        }
+        else {
+            position[axis] = (position[axis] & $ff00 as word) + $0010 
+        }
 
 
+    end:
         if (distance > 0) {
             position[axis] -= radius
         }
