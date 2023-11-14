@@ -11,6 +11,11 @@ pub fn main() !void {
     const allocator = gpa.allocator();
     try genWallTiles(try Files.init(allocator, "wall_tiles"));
     try genPalette(try Files.init(allocator, "palette"));
+    var floor_files = try Files.init(allocator, "floor_tiles");
+    defer floor_files.deinit();
+    const floor_data = try toIndexed(floor_files.image);
+    defer allocator.free(floor_data);
+    try floor_files.writer.writeAll(floor_data);
 }
 
 // pub fn convert(allocator: Allocator, in_name: []const u8, out_name: []const u8) !void {
@@ -63,6 +68,33 @@ fn genPalette(files: Files) !void {
     }
 }
 
+fn toIndexed(image: Image) ![]u8 {
+    const len = image.width * (image.height - 1);
+    const data = try image.allocator.alloc(u8, len / 2);
+    var palette: [16]u32 = undefined;
+    var pixels = image.pixels.rgba32;
+    for (palette[0..], 0..) |*p, i| {
+        p.* = @bitCast(pixels[i]);
+    }
+    pixels = pixels[image.width..];
+    var p: usize = 0;
+    while (p < pixels.len) : (p += 2) {
+        const msb = indexFromPixel(@bitCast(pixels[p]), palette);
+        const lsb = indexFromPixel(@bitCast(pixels[p + 1]), palette);
+        data[p / 2] = lsb + (msb << 4);
+    }
+    return data;
+}
+
+fn indexFromPixel(pixel: u32, palette: [16]u32) u8 {
+    for (palette[0..], 0..) |p, i| {
+        if (pixel == p) {
+            return @intCast(i);
+        }
+    }
+    return 0;
+}
+
 fn genWallTiles(files: Files) !void {
     const size = (files.image.width * (files.image.height - 1)) & (~@as(usize, 0b111));
     _ = size;
@@ -97,15 +129,6 @@ fn genWallTiles(files: Files) !void {
         }
     }
     // try files.writer.writeAll(std.mem.asBytes(&tile));
-}
-
-fn indexFromPixel(pixel: u32, palette: [16]u32) u8 {
-    for (palette[0..], 0..) |p, i| {
-        if (pixel == p) {
-            return @intCast(i);
-        }
-    }
-    return 0;
 }
 
 /// turn the first 8 pixels into a packed byte
