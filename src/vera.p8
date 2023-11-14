@@ -185,6 +185,13 @@ vera {
         data0 = (width << 4) + (height << 6) + (palette_offset & $0f)
     }
 
+    sub updateSpriteFlip(ubyte sprite, ubyte hflip, ubyte vflip) {
+        setAddrSprite(sprite, 6)
+        ubyte config = vera.data0
+        setAddrSprite(sprite, 6)
+        vera.data0 = (config & %11111100) + hflip + (vflip << 1)
+    }
+
     sub getScanline() -> uword {
         uword scanline = scanline_l as uword
         if ien & 64 {

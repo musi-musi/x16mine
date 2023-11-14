@@ -15,20 +15,27 @@ player {
 
     const uword sprite_base = $a000
 
+    const uword sprite_pos_offset = 16
+
+    sprite_data:
+        %asmbinary "player_sprite.dat"
+
     sub init() {
         vera.dc_video |= vera.enable_sprites
 
         vera.setAddress(sprite_base, vera.incr_1)
-        repeat 8*16 {
-            vera.data0 = $ff
+        uword p = &sprite_data
+        repeat 16*32 {
+            vera.data0 = @(p)
+            p += 1
         }
 
         vera.setAddrSprite(0, 0)
         vera.setSpriteAddress(sprite_base, vera.sprite_4bpp)
-        vera.setSpriteXY((position[0] >> 4) - 8)
-        vera.setSpriteXY((position[1] >> 4) - 8)
+        vera.setSpriteXY((position[0] >> 4) - sprite_pos_offset)
+        vera.setSpriteXY((position[1] >> 4) - sprite_pos_offset)
         vera.setSpriteConfig(0, 3)
-        vera.setSpriteSizePalette(vera.sprite_16, vera.sprite_16, 0)
+        vera.setSpriteSizePalette(vera.sprite_32, vera.sprite_32, 3)
 
     }
 
@@ -73,7 +80,7 @@ player {
         }
 
         vera.setAddrSprite(0, 2 * (axis + 1))
-        vera.setSpriteXY((position[axis] >> 4) - 8)
+        vera.setSpriteXY((position[axis] >> 4) - sprite_pos_offset)
     }
 
     ubyte[2] tile_pos
@@ -97,6 +104,12 @@ player {
             distance += speed
         }
         if distance != 0 {
+            if (distance > 0) {
+                vera.updateSpriteFlip(0, 0, 0)
+            }
+            else {
+                vera.updateSpriteFlip(0, 1, 0)
+            }
             move(axis_x, distance)
         }
         distance = 0

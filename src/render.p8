@@ -34,9 +34,10 @@ render_level {
     const uword bytes_per_tile_8 = 8 * 8 / 2
     const uword bytes_per_tile_16 = 16 * 16 / 2
 
-    uword wall_tiles_count = 10
+    uword walls_tileset_count = 1
+    uword wall_tiles_count = walls_tileset_count * 5
     wall_tiles:
-        %asmbinary "wall_tiles.dat"
+        %asmbinary "wall_tiles_flat.dat"
     uword floor_tiles_count = 1
     floor_tiles:
         %asmbinary "floor_tiles.dat"
@@ -75,7 +76,7 @@ render_level {
         vera.setAddress(wall_map_base+1, vera.incr_2)
         repeat wall_map_width {
             repeat wall_map_height {
-                vera.data0 = $10
+                vera.data0 = $40
             }
         }
 
@@ -161,7 +162,7 @@ render_level {
                         tile = 4
                     }
                 }
-                tile += 5
+                ; tile += 5
                 tile *= 4
                 tile += subtile
                 tile += 1

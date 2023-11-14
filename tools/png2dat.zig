@@ -10,12 +10,10 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
     try genWallTiles(try Files.init(allocator, "wall_tiles"));
+    try genWallTiles(try Files.init(allocator, "wall_tiles_flat"));
     try genPalette(try Files.init(allocator, "palette"));
-    var floor_files = try Files.init(allocator, "floor_tiles");
-    defer floor_files.deinit();
-    const floor_data = try toIndexed(floor_files.image);
-    defer allocator.free(floor_data);
-    try floor_files.writer.writeAll(floor_data);
+    try gen4bpp(allocator, "floor_tiles");
+    try gen4bpp(allocator, "player_sprite");
 }
 
 // pub fn convert(allocator: Allocator, in_name: []const u8, out_name: []const u8) !void {
@@ -129,6 +127,14 @@ fn genWallTiles(files: Files) !void {
         }
     }
     // try files.writer.writeAll(std.mem.asBytes(&tile));
+}
+
+fn gen4bpp(allocator: Allocator, comptime name: []const u8) !void {
+    var files = try Files.init(allocator, name);
+    defer files.deinit();
+    const data = try toIndexed(files.image);
+    defer allocator.free(data);
+    try files.writer.writeAll(data);
 }
 
 /// turn the first 8 pixels into a packed byte
