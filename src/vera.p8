@@ -144,10 +144,45 @@ vera {
 
     sub setMapBase1(uword address) {
         l1_mapbase = (address >> 9) as ubyte
+        return
     }
 
     sub setTileBase1(ubyte width, ubyte height, uword address) {
         l1_tilebase = width + (height << 1) + (((address >> 9) as ubyte) & %11111100)
+        return
+    }
+
+    sub setAddrSprite(ubyte sprite, ubyte offset) {
+        setAddressHi($fc00 + sprite * 8 + offset, incr_1)
+        return
+    }
+
+    const sprite_4bpp = $00
+    const sprite_8bpp = $80
+
+    const sprite_8 = 0
+    const sprite_16 = 1
+    const sprite_32 = 2
+    const sprite_64 = 3
+
+    const sprite_disabled = $00
+
+    sub setSpriteAddress(uword addr, ubyte mode) {
+        data0 = ((addr >> 5) & $ff) as ubyte
+        data0 = mode + ((addr >> 13) & $0f) as ubyte
+    }
+
+    sub setSpriteXY(uword xy) {
+        data0 = (xy & $ff) as ubyte
+        data0 = ((xy >> 8) & 3) as ubyte
+    }
+
+    sub setSpriteConfig(ubyte mask, ubyte z_depth) {
+        data0 = (mask << 4) + ((z_depth & 3) << 2)
+    }
+
+    sub setSpriteSizePalette(ubyte width, ubyte height, ubyte offset) {
+        data0 = (width << 4) + (height << 6) + (offset & $0f)
     }
 
     sub getScanline() -> uword {

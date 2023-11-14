@@ -232,7 +232,7 @@ render_level {
                         tile = 4
                     }
                 }
-                tile += 5
+                ; tile += 5
                 tile *= 4
                 tile += subtile
                 tile += 1

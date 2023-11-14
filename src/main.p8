@@ -61,18 +61,18 @@ irq {
     ; }
 
     sub vsync() {
-        ; if (keyboard.checkKey(keyboard.key_w)) {
-        ;     vera.l0_vscroll -= 1
-        ; }
-        ; if (keyboard.checkKey(keyboard.key_s)) {
-        ;     vera.l0_vscroll += 1
-        ; }
-        ; if (keyboard.checkKey(keyboard.key_a)) {
-        ;     vera.l0_hscroll -= 1
-        ; }
-        ; if (keyboard.checkKey(keyboard.key_d)) {
-        ;     vera.l0_hscroll += 1
-        ; }
+        if (keyboard.checkKey(keyboard.key_w)) {
+            vera.l0_vscroll -= 1
+        }
+        if (keyboard.checkKey(keyboard.key_s)) {
+            vera.l0_vscroll += 1
+        }
+        if (keyboard.checkKey(keyboard.key_a)) {
+            vera.l0_hscroll -= 1
+        }
+        if (keyboard.checkKey(keyboard.key_d)) {
+            vera.l0_hscroll += 1
+        }
         return
     }
 

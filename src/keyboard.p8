@@ -5,44 +5,101 @@
 
 keyboard {
 
-    bool[8] @shared key_status 
-
-    const ubyte key_w = 0
-    const ubyte key_a = 1
-    const ubyte key_s = 2
-    const ubyte key_d = 3
+    bool[256] @shared key_status 
 
 
-    const ubyte scancode_q =  $11
-    const ubyte scancode_w =  $12
-    const ubyte scancode_e =  $13
-    const ubyte scancode_r =  $14
-    const ubyte scancode_t =  $15
-    const ubyte scancode_y =  $16
-    const ubyte scancode_u =  $17
-    const ubyte scancode_i =  $18
-    const ubyte scancode_o =  $19
-    const ubyte scancode_p =  $1a
+    const ubyte key_grave = $01
+    const ubyte key_1 = $02
+    const ubyte key_2 = $03
+    const ubyte key_3 = $04
+    const ubyte key_4 = $05
+    const ubyte key_5 = $06
+    const ubyte key_6 = $07
+    const ubyte key_7 = $08
+    const ubyte key_8 = $09
+    const ubyte key_9 = $0a
+    const ubyte key_0 = $0b
+    const ubyte key_minus = $0c
+    const ubyte key_equal = $0d
+    const ubyte key_backspace = $0f
+    const ubyte key_tab = $10
 
-    const ubyte scancode_a =  $1f
-    const ubyte scancode_s =  $20
-    const ubyte scancode_d =  $21
-    const ubyte scancode_f =  $22
-    const ubyte scancode_g =  $23
-    const ubyte scancode_h =  $24
-    const ubyte scancode_j =  $25
-    const ubyte scancode_k =  $26
-    const ubyte scancode_l =  $27
+    const ubyte key_q =  $11
+    const ubyte key_w =  $12
+    const ubyte key_e =  $13
+    const ubyte key_r =  $14
+    const ubyte key_t =  $15
+    const ubyte key_y =  $16
+    const ubyte key_u =  $17
+    const ubyte key_i =  $18
+    const ubyte key_o =  $19
+    const ubyte key_p =  $1a
 
-    const ubyte scancode_z =  $2e
-    const ubyte scancode_x =  $2f
-    const ubyte scancode_c =  $30
-    const ubyte scancode_v =  $31
-    const ubyte scancode_b =  $32
-    const ubyte scancode_n =  $33
-    const ubyte scancode_m =  $34
+    const ubyte key_lbracket =  $1b
+    const ubyte key_rbracket =  $1c
+    const ubyte key_backslash =  $1d
+    const ubyte key_capslock =  $1e
 
-    const ubyte scancode_space =  $3d
+    const ubyte key_a =  $1f
+    const ubyte key_s =  $20
+    const ubyte key_d =  $21
+    const ubyte key_f =  $22
+    const ubyte key_g =  $23
+    const ubyte key_h =  $24
+    const ubyte key_j =  $25
+    const ubyte key_k =  $26
+    const ubyte key_l =  $27
+
+    const ubyte key_semicolon =  $28
+    const ubyte key_quote =  $29
+    const ubyte key_enter =  $2b
+    const ubyte key_lshift =  $2c
+
+    const ubyte key_z =  $2e
+    const ubyte key_x =  $2f
+    const ubyte key_c =  $30
+    const ubyte key_v =  $31
+    const ubyte key_b =  $32
+    const ubyte key_n =  $33
+    const ubyte key_m =  $34
+
+    const ubyte key_comma =  $35
+    const ubyte key_point =  $36
+    const ubyte key_slash =  $37
+    const ubyte key_rshift =  $39
+    const ubyte key_lctrl =  $3a
+    const ubyte key_lsuper =  $3b
+    const ubyte key_lalt =  $3e
+    const ubyte key_space =  $3d
+    const ubyte key_ralt =  $3e
+    const ubyte key_rsuper =  $3f
+    const ubyte key_rctrl =  $40
+    const ubyte key_menu =  $41
+    const ubyte key_insert =  $4b
+    const ubyte key_delete =  $4c
+    const ubyte key_left =  $4f
+    const ubyte key_home =  $50
+    const ubyte key_end =  $51
+    const ubyte key_up =  $53
+    const ubyte key_down =  $54
+    const ubyte key_pgup =  $55
+    const ubyte key_pgdown =  $56
+    const ubyte key_right =  $59
+
+    const ubyte key_esc =  $6e
+    const ubyte key_f1 =  $70
+    const ubyte key_f2 =  $71
+    const ubyte key_f3 =  $72
+    const ubyte key_f4 =  $73
+    const ubyte key_f5 =  $74
+    const ubyte key_f6 =  $75
+    const ubyte key_f7 =  $76
+    const ubyte key_f8 =  $77
+    const ubyte key_f9 =  $78
+    const ubyte key_f10 =  $79
+    const ubyte key_f11 =  $7a
+    const ubyte key_f12 =  $7b
+
 
 
     sub init() {
@@ -56,26 +113,16 @@ keyboard {
             cli
             rts
 
-        check_key .macro key
-            cmp #p8_scancode_\1
-            bne check_\1_else
-            stx p8_key_status+p8_key_\1
-            check_\1_else
-        .endmacro
-
         keyboard_handler:
             ldx #1
             and #$ff
             bpl +
             ldx #0
         +
-
             and #$7f
-
-            #check_key w
-            #check_key a
-            #check_key s
-            #check_key d
+            tay
+            txa
+            sta p8_key_status,y
         }}
 
         return
