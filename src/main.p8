@@ -32,7 +32,16 @@ main {
 
     sub initVideo() {
         vera.ctrl = 0
+
+        vera.setAddressHi($fa00, vera.incr_1);
+        uword p = &palette
+        repeat 512 {
+            vera.data0 = @(p)
+            p += 1
+        }
         return
+        palette:
+            %asmbinary "palette.dat"
     }
 
 }
@@ -52,18 +61,18 @@ irq {
     ; }
 
     sub vsync() {
-        if (keyboard.checkKey(keyboard.key_w)) {
-            vera.l0_vscroll -= 1
-        }
-        if (keyboard.checkKey(keyboard.key_s)) {
-            vera.l0_vscroll += 1
-        }
-        if (keyboard.checkKey(keyboard.key_a)) {
-            vera.l0_hscroll -= 1
-        }
-        if (keyboard.checkKey(keyboard.key_d)) {
-            vera.l0_hscroll += 1
-        }
+        ; if (keyboard.checkKey(keyboard.key_w)) {
+        ;     vera.l0_vscroll -= 1
+        ; }
+        ; if (keyboard.checkKey(keyboard.key_s)) {
+        ;     vera.l0_vscroll += 1
+        ; }
+        ; if (keyboard.checkKey(keyboard.key_a)) {
+        ;     vera.l0_hscroll -= 1
+        ; }
+        ; if (keyboard.checkKey(keyboard.key_d)) {
+        ;     vera.l0_hscroll += 1
+        ; }
         return
     }
 

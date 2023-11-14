@@ -4,8 +4,8 @@
 
 level {
 
-    const ubyte room_width = 40
-    const ubyte room_height = 25
+    const uword room_width = 40
+    const uword room_height = 25
 
     const ubyte tiles_page = $08
 

@@ -137,6 +137,19 @@ vera {
         l0_tilebase = width + (height << 1) + (((address >> 9) as ubyte) & %11111100)
     }
 
+    sub configLayer1(ubyte width, ubyte height, ubyte color) {
+        l1_config = (width << 4) + (height << 6) + color
+        return
+    }
+
+    sub setMapBase1(uword address) {
+        l1_mapbase = (address >> 9) as ubyte
+    }
+
+    sub setTileBase1(ubyte width, ubyte height, uword address) {
+        l1_tilebase = width + (height << 1) + (((address >> 9) as ubyte) & %11111100)
+    }
+
     sub getScanline() -> uword {
         uword scanline = scanline_l as uword
         if ien & 64 {

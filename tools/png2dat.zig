@@ -9,7 +9,8 @@ const Image = img.Image;
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
-    try genWallTiles(try Files.init(allocator, "wall_tiles.png", "wall_tiles.dat"));
+    try genWallTiles(try Files.init(allocator, "wall_tiles"));
+    try genPalette(try Files.init(allocator, "palette"));
 }
 
 // pub fn convert(allocator: Allocator, in_name: []const u8, out_name: []const u8) !void {
@@ -28,15 +29,17 @@ pub fn main() !void {
 // }
 
 const Files = struct {
+    allocator: Allocator,
     image: img.Image,
     out_file: File,
     writer: File.Writer,
 
-    fn init(allocator: Allocator, in_name: []const u8, out_name: []const u8) !Files {
-        var image = try img.Image.fromFilePath(allocator, in_name);
+    fn init(allocator: Allocator, comptime name: []const u8) !Files {
+        var image = try img.Image.fromFilePath(allocator, name ++ ".png");
         errdefer image.deinit();
-        const out_file = try std.fs.cwd().createFile(out_name, .{});
+        const out_file = try std.fs.cwd().createFile(name ++ ".dat", .{});
         return Files{
+            .allocator = allocator,
             .image = image,
             .out_file = out_file,
             .writer = out_file.writer(),
@@ -49,22 +52,60 @@ const Files = struct {
     }
 };
 
+fn genPalette(files: Files) !void {
+    var iter = files.image.iterator();
+    while (iter.next()) |pixel| {
+        const r: u8 = @intFromFloat(pixel.r * 15);
+        const g: u8 = @intFromFloat(pixel.g * 15);
+        const b: u8 = @intFromFloat(pixel.b * 15);
+        try files.writer.writeByte((g << 4) + b);
+        try files.writer.writeByte(r);
+    }
+}
+
 fn genWallTiles(files: Files) !void {
-    const size = (files.image.width * files.image.height) & (~@as(usize, 0b111));
+    const size = (files.image.width * (files.image.height - 1)) & (~@as(usize, 0b111));
     _ = size;
 
-    var data: [4][4][8]u8 = undefined;
+    // const data = try files.allocator.alloc([4][8]u8, size * 16 * 16);
+    // defer files.allocator.free(data);
 
-    const pixels = files.image.pixels.rgba32;
-    for (&data, 0..) |*tile, t| {
-        for (tile, 0..) |*subtile, s| {
-            for (subtile, 0..) |*byte, b| {
-                const i = (t * 4 * 8) + ((s & 2) * 8) + (s % 2 + b * 2);
-                byte.* = byteFromPixels(pixels[i * 8 ..]);
+    var pixels = files.image.pixels.rgba32;
+    var palette: [16]u32 = undefined;
+    for (palette[0..], 0..) |*p, i| {
+        p.* = @bitCast(pixels[i]);
+    }
+    pixels = pixels[files.image.width..];
+    while (pixels.len > 0) : (pixels = pixels[16 * 16 ..]) {
+        var tile: [16 * 16 / 2]u8 = undefined;
+        var p: usize = 0;
+        while (p < 16 * 16) : (p += 2) {
+            const msb = indexFromPixel(@bitCast(pixels[p]), palette);
+            const lsb = indexFromPixel(@bitCast(pixels[p + 1]), palette);
+            tile[p / 2] = lsb + (msb << 4);
+        }
+        for (0..4) |subtile| {
+            for (0..8) |row| {
+                for (0..4) |col| {
+                    if (subtile % 2 == 0) {
+                        try files.writer.writeByte(tile[subtile * 8 * 4 + row * 8 + col]);
+                    } else {
+                        try files.writer.writeByte(tile[(subtile - 1) * 8 * 4 + row * 8 + col + 4]);
+                    }
+                }
             }
         }
     }
-    try files.writer.writeAll(std.mem.asBytes(&data));
+    // try files.writer.writeAll(std.mem.asBytes(&tile));
+}
+
+fn indexFromPixel(pixel: u32, palette: [16]u32) u8 {
+    for (palette[0..], 0..) |p, i| {
+        if (pixel == p) {
+            return @intCast(i);
+        }
+    }
+    return 0;
 }
 
 /// turn the first 8 pixels into a packed byte

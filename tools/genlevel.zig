@@ -1,7 +1,5 @@
 const std = @import("std");
 
-const allocator = std.mem.Allocator;
-
 const data =
     "########################################" ++
     "###############           #    #########" ++
@@ -28,6 +26,7 @@ const data =
     "########################################" ++
     "########################################" ++
     "########################################";
+
 pub fn main() !void {
     const file = try std.fs.cwd().createFile("level.dat", .{});
     defer file.close();
