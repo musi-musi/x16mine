@@ -1,6 +1,7 @@
 %import syslib
 %import vera
 %import keyboard
+%import level
 
 player {
 
@@ -9,7 +10,8 @@ player {
 
     word[2] position = [(12 * 256) + 128, (5 * 256) + 128]
 
-    const uword speed = 16
+    const uword speed = 32
+    const ubyte radius = 80
 
     const uword sprite_base = $a000
 
@@ -31,12 +33,62 @@ player {
     }
 
     sub move(ubyte axis, word distance) {
+
+        if (distance > 0) {
+            position[axis] += radius
+        }
+        else {
+            position[axis] -= radius
+        }
+
         position[axis] += distance
+
+        setTilePos()
+
+        if checkTile() != 0 {
+            position[axis] -= distance
+        }
+        else {
+            ubyte norm = axis ^ 1
+            if (position[norm] & $ff) as ubyte < radius {
+                tile_pos[norm] -= 1
+                if checkTile() != 0 {
+                    position[axis] -= distance
+                }
+            }
+            else if (position[norm] & $ff) as ubyte >= (255 - radius) {
+                tile_pos[norm] += 1
+                if checkTile() != 0 {
+                    position[axis] -= distance
+                }
+            }
+        }
+
+
+        if (distance > 0) {
+            position[axis] -= radius
+        }
+        else {
+            position[axis] += radius
+        }
+
         vera.setAddrSprite(0, 2 * (axis + 1))
         vera.setSpriteXY((position[axis] >> 4) - 8)
     }
 
-    sub input() {
+    ubyte[2] tile_pos
+
+    sub setTilePos() {
+        tile_pos[0] = ((position[0] >> 8) & $ff) as ubyte
+        tile_pos[1] = ((position[1] >> 8) & $ff) as ubyte
+    }
+
+    sub checkTile() -> ubyte {
+        return level.getRoomTile(tile_pos[0], tile_pos[1])
+    }
+
+    sub vsync() {
+        level.bankRoom(0)
         word distance = 0
         if keyboard.checkKey(keyboard.key_a) {
             distance -= speed

@@ -24,4 +24,12 @@ level {
         return
     }
 
+    sub getRoomTile(ubyte x, ubyte y) -> ubyte {
+        if x >= room_width
+            return $1
+        if y >= room_height
+            return $1
+        return tiles[x + y * room_width]
+    }
+
 }

@@ -15,21 +15,12 @@ main {
         irq.init()
         level.init()
         keyboard.init()
-        ; sys.set_irq(&irq.handler, 1)
         render.init()
         player.init()
 
         initVideo()
-        ; render_level.initLayers()
         loop:
-        ; if (vera.getScanline() > (480 - 16 * 4)) {
-        ;     vera.dc_video &= ~vera.enable_layer0
-        ; }
-        ; else {
-        ;     vera.dc_video |= vera.enable_layer0
-        ; }
         goto loop
-        ; return
     }
 
     sub initVideo() {
@@ -56,26 +47,9 @@ irq {
     }
 
 
-    ; sub handler() {
-    ;     if (vera.isr & vera.ien_vsync) {
-    ;     }
-    ;     return
-    ; }
 
     sub vsync() {
-        player.input()
-        ; if (keyboard.checkKey(keyboard.key_w)) {
-        ;     vera.l0_vscroll -= 1
-        ; }
-        ; if (keyboard.checkKey(keyboard.key_s)) {
-        ;     vera.l0_vscroll += 1
-        ; }
-        ; if (keyboard.checkKey(keyboard.key_a)) {
-        ;     vera.l0_hscroll -= 1
-        ; }
-        ; if (keyboard.checkKey(keyboard.key_d)) {
-        ;     vera.l0_hscroll += 1
-        ; }
+        player.vsync()
         return
     }
 
@@ -132,7 +106,6 @@ irq {
             jsr _irq_restore
         _old_irq
             jmp $ffff
-        
 
         _line_handler
             jsr _irq_save
