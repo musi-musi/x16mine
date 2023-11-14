@@ -157,22 +157,22 @@ vera {
         return
     }
 
-    const sprite_4bpp = $00
-    const sprite_8bpp = $80
+    const ubyte sprite_4bpp = $00
+    const ubyte sprite_8bpp = $80
 
-    const sprite_8 = 0
-    const sprite_16 = 1
-    const sprite_32 = 2
-    const sprite_64 = 3
+    const ubyte sprite_8 = 0
+    const ubyte sprite_16 = 1
+    const ubyte sprite_32 = 2
+    const ubyte sprite_64 = 3
 
-    const sprite_disabled = $00
+    const ubyte sprite_disabled = $00
 
-    sub setSpriteAddress(uword addr, ubyte mode) {
-        data0 = ((addr >> 5) & $ff) as ubyte
-        data0 = mode + ((addr >> 13) & $0f) as ubyte
+    sub setSpriteAddress(uword address, ubyte mode) {
+        data0 = ((address >> 5) & $ff) as ubyte
+        data0 = mode + ((address >> 13) & $0f) as ubyte
     }
 
-    sub setSpriteXY(uword xy) {
+    sub setSpriteXY(word xy) {
         data0 = (xy & $ff) as ubyte
         data0 = ((xy >> 8) & 3) as ubyte
     }
@@ -181,8 +181,8 @@ vera {
         data0 = (mask << 4) + ((z_depth & 3) << 2)
     }
 
-    sub setSpriteSizePalette(ubyte width, ubyte height, ubyte offset) {
-        data0 = (width << 4) + (height << 6) + (offset & $0f)
+    sub setSpriteSizePalette(ubyte width, ubyte height, ubyte palette_offset) {
+        data0 = (width << 4) + (height << 6) + (palette_offset & $0f)
     }
 
     sub getScanline() -> uword {

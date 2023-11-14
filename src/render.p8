@@ -135,77 +135,6 @@ render_level {
         x_incr = 1
         x_limit = level.room_width-1
         drawRoomRowSubtile(p, row, 3)
-        ; for x in 0 to level.room_width {
-        ;     if p[x] != 0 {
-        ;         tile = 0
-        ;         if @(p + x - 1) != 0 or x == 0 {
-        ;             tile += 1
-        ;         }
-        ;         if @(p + x - level.room_width) != 0 or row == 0 {
-        ;             tile += 2
-        ;         }
-        ;         tile *= 4
-        ;         tile += 1
-        ;         vera.data0 = tile
-        ;     }
-        ;     else {
-        ;         vera.data0 = 0
-        ;     }
-        ; }
-        ; setAddrRowStart(row, 1, vera.incr_4)
-        ; for x in 0 to level.room_width {
-        ;     if p[x] != 0 {
-        ;         tile = 0
-        ;         if @(p + x + 1) != 0 or x == level.room_width - 1 {
-        ;             tile += 1
-        ;         }
-        ;         if @(p + x - level.room_width) != 0 or row == 0 {
-        ;             tile += 2
-        ;         }
-        ;         tile *= 4
-        ;         tile += 2
-        ;         vera.data0 = tile
-        ;     }
-        ;     else {
-        ;         vera.data0 = 0
-        ;     }
-        ; }
-        ; setAddrRowStart(row, wall_map_width, vera.incr_4)
-        ; for x in 0 to level.room_width {
-        ;     if p[x] != 0 {
-        ;         tile = 0
-        ;         if @(p + x - 1) != 0 or x == 0 {
-        ;             tile += 1
-        ;         }
-        ;         if @(p + x + level.room_width) != 0 or row == level.room_height - 1 {
-        ;             tile += 2
-        ;         }
-        ;         tile *= 4
-        ;         tile += 3
-        ;         vera.data0 = tile
-        ;     }
-        ;     else {
-        ;         vera.data0 = 0
-        ;     }
-        ; }
-        ; setAddrRowStart(row, wall_map_width + 1, vera.incr_4)
-        ; for x in 0 to level.room_width {
-        ;     if p[x] != 0 {
-        ;         tile = 0
-        ;         if @(p + x + 1) != 0 or x == level.room_width - 1 {
-        ;             tile += 1
-        ;         }
-        ;         if @(p + x + level.room_width) != 0 or row == level.room_height - 1{
-        ;             tile += 2
-        ;         }
-        ;         tile *= 4
-        ;         tile += 4
-        ;         vera.data0 = tile
-        ;     }
-        ;     else {
-        ;         vera.data0 = 0
-        ;     }
-        ; }
     }
 
     word x_incr
@@ -232,7 +161,7 @@ render_level {
                         tile = 4
                     }
                 }
-                ; tile += 5
+                tile += 5
                 tile *= 4
                 tile += subtile
                 tile += 1
