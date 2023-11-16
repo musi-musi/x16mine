@@ -105,7 +105,7 @@ player {
         return level.getRoomTile(tile_pos[0], tile_pos[1])
     }
 
-    sub vsync() {
+    sub update() {
         level.bankRoom(0)
         word distance = 0
         if keyboard.checkKey(keyboard.key_a) {

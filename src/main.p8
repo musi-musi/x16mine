@@ -19,7 +19,10 @@ main {
         player.init()
 
         initVideo()
-        loop:
+
+    loop:
+        irq.waitForVsync()
+        player.update()
         goto loop
     }
 
@@ -46,10 +49,18 @@ irq {
         install(&vsync, &line)
     }
 
+    ubyte event_vsync = 0
 
+    sub waitForVsync() {
+    spin:
+        if not event_vsync {
+            goto spin
+        }
+        event_vsync = 0
+    }
 
     sub vsync() {
-        player.vsync()
+        event_vsync = 1
         return
     }
 
