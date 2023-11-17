@@ -1,5 +1,6 @@
 %import vera
 %import level
+%import veradat
 
 render {
 
@@ -27,22 +28,20 @@ render_level {
     const ubyte floor_map_height = 32
 
     const uword wall_map_base = $1000
-    const uword wall_tile_base = $0000
     const uword floor_map_base = $6000
-    const uword floor_tile_base = $5000
+    uword wall_tile_base
+    uword floor_tile_base
 
     const uword bytes_per_tile_8 = 8 * 8 / 2
     const uword bytes_per_tile_16 = 16 * 16 / 2
 
     uword walls_tileset_count = 1
     uword wall_tiles_count = walls_tileset_count * 5
-    wall_tiles:
-        %asmbinary "wall_tiles_flat.dat"
     uword floor_tiles_count = 1
-    floor_tiles:
-        %asmbinary "floor_tiles.dat"
+
 
     sub enableLayers() {
+        
         ; vera.dc_video &= vera.disable_all
         vera.dc_video |= vera.enable_layer0
         vera.dc_video |= vera.enable_layer1
@@ -65,13 +64,16 @@ render_level {
     sub initLayers() {
         uword i
 
-        vera.setAddress(wall_tile_base, vera.incr_1)
-        repeat bytes_per_tile_8 {
-            vera.data0 = 0
-        }
-        for i in 0 to wall_tiles_count * bytes_per_tile_8 * 4 {
-            vera.data0 = @(&wall_tiles+i)
-        }
+        wall_tile_base = veradat.getEntryAddress(0)
+        floor_tile_base = veradat.getEntryAddress(1)
+
+        ; vera.setAddress(wall_tile_base, vera.incr_1)
+        ; repeat bytes_per_tile_8 {
+        ;     vera.data0 = 0
+        ; }
+        ; for i in 0 to wall_tiles_count * bytes_per_tile_8 * 4 {
+        ;     vera.data0 = @(&wall_tiles+i)
+        ; }
 
         vera.setAddress(wall_map_base+1, vera.incr_2)
         repeat wall_map_width {
@@ -80,19 +82,19 @@ render_level {
             }
         }
 
-        vera.setAddress(floor_tile_base, vera.incr_1)
-        repeat bytes_per_tile_16 {
-            vera.data0 = $44
-        }
+        ; vera.setAddress(floor_tile_base, vera.incr_1)
+        ; repeat bytes_per_tile_16 {
+        ;     vera.data0 = $44
+        ; }
 
-        for i in 0 to floor_tiles_count * bytes_per_tile_16 {
-            vera.data0 = @(&floor_tiles+i)
-        }
+        ; for i in 0 to floor_tiles_count * bytes_per_tile_16 {
+        ;     vera.data0 = @(&floor_tiles+i)
+        ; }
 
         vera.setAddress(floor_map_base, vera.incr_1)
         repeat floor_map_width {
             repeat floor_map_height {
-                vera.data0 = 1
+                vera.data0 = 0
                 vera.data0 = $20
             }
         }

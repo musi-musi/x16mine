@@ -2,6 +2,7 @@
 %import vera
 %import keyboard
 %import level
+%import veradat
 
 player {
 
@@ -13,22 +14,12 @@ player {
     const uword speed = 32
     const ubyte radius = 64
 
-    const uword sprite_base = $a000
-
     const uword sprite_pos_offset = 8
-
-    sprite_data:
-        %asmbinary "player_sprite.dat"
 
     sub init() {
         vera.dc_video |= vera.enable_sprites
-
-        vera.setAddress(sprite_base, vera.incr_1)
-        uword p = &sprite_data
-        repeat 16*32 {
-            vera.data0 = @(p)
-            p += 1
-        }
+        
+        uword sprite_base = veradat.getEntryAddress(2);
 
         vera.setAddrSprite(0, 0)
         vera.setSpriteAddress(sprite_base, vera.sprite_4bpp)

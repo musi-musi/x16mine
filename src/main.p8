@@ -7,11 +7,13 @@
 %import keyboard
 %import level
 %import player
+%import veradat
 
 
 main {
 
     sub start() {
+        veradat.load();
         irq.init()
         level.init()
         keyboard.init()
@@ -29,15 +31,15 @@ main {
     sub initVideo() {
         vera.ctrl = 0
 
-        vera.setAddressHi($fa00, vera.incr_1);
-        uword p = &palette
-        repeat 512 {
-            vera.data0 = @(p)
-            p += 1
-        }
-        return
-        palette:
-            %asmbinary "palette.dat"
+        ; vera.setAddressHi($fa00, vera.incr_1);
+        ; uword p = &palette
+        ; repeat 512 {
+        ;     vera.data0 = @(p)
+        ;     p += 1
+        ; }
+        ; return
+        ; palette:
+        ;     %asmbinary "palette.dat"
     }
 
 }

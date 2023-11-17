@@ -1,0 +1,36 @@
+{
+    "palette": "palette.png",
+    "tile": [
+        {
+            "name": "walls",
+            "bpp": 4,
+            "width": 8,
+            "height": 8,
+            "files": [
+                "wall_empty.png",
+                "wall_tiles_flat.png",
+                "wall_tiles.png"
+            ]
+        },
+        {
+            "name": "floors",
+            "bpp": 4,
+            "width": 16,
+            "height": 16,
+            "files": [
+                "floor_tiles.png"
+            ]
+        }
+    ],
+    "sprite": [
+        {
+            "name": "player",
+            "bpp": 4,
+            "width": 16,
+            "height": 16,
+            "files": [
+                "player_sprite.png"
+            ]
+        }
+    ]
+}
