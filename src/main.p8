@@ -1,6 +1,5 @@
 %zeropage kernalsafe
 
-%import textio
 %import syslib
 %import vera
 %import render
@@ -8,12 +7,14 @@
 %import level
 %import player
 %import veradat
+%import vram
 
 
 main {
 
     sub start() {
-        veradat.load();
+        vram.load();
+    
         irq.init()
         level.init()
         keyboard.init()
@@ -27,6 +28,8 @@ main {
         player.update()
         goto loop
     }
+
+
 
     sub initVideo() {
         vera.ctrl = 0

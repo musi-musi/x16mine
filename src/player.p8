@@ -3,6 +3,7 @@
 %import keyboard
 %import level
 %import veradat
+%import vram
 
 player {
 
@@ -19,7 +20,7 @@ player {
     sub init() {
         vera.dc_video |= vera.enable_sprites
         
-        uword sprite_base = veradat.getEntryAddress(2);
+        uword sprite_base = vram.getSegmentStart(2);
 
         vera.setAddrSprite(0, 0)
         vera.setSpriteAddress(sprite_base, vera.sprite_4bpp)

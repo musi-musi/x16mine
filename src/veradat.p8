@@ -1,48 +1,94 @@
 %import syslib
-%import vera
-%import util
+%import string
 
 veradat {
-    const uword load_addr = $a000
-    const ubyte load_bank = $02
 
-    &uword start_addr = load_addr + $0
-    &uword data_start = load_addr + $2
-    &uword data_len = load_addr + $4
-    &uword palette_start = load_addr + $6
-    &uword palette_len = load_addr + $8
-    &uword entry_count = load_addr + $a
-    const uword entries_start = load_addr + $c
+    uword load_addr = 0
+    ubyte load_bank = 0
+    uword segments_len = 0
+    uword segments = 0
 
-    sub load() {
-        cx16.rambank(load_bank);
-        util.loadFile("vera.dat", load_addr)
+    sub loadFileTo(str name, uword addr) {
+        load_bank = @(0)
+        load_addr = addr
+        cbm.SETLFS(4, 8, 0)
+        cbm.SETNAM(string.length(name), name)
+        void cbm.LOAD(0, addr)
+        @(0) = load_bank
+        segments_len = derefWord(load_addr + 8)
+        segments = load_addr + 10
+    }
 
-        cx16.rambank(load_bank);
+    sub loadFileToBank(str name) {
+        loadFileTo(name, $a000)
+    }
 
-        vera.setAddressHi($fa00, vera.incr_1);
+    sub getSegmentStart(uword table, uword segment) -> uword {
+        return derefWord(table + segment * 6)
+    }
+    sub getSegmentStartH(uword table, uword segment) -> ubyte {
+        return table[segment * 6 + 2]
+    }
+    sub getSegmentLen(uword table, uword segment) -> uword {
+        return derefWord(table + segment * 6 + 3)
+    }
+    sub getSegmentLenH(uword table, uword segment) -> ubyte {
+        return table[segment * 6 + 5]
+    }
+
+    sub copySegmentTable(uword dest) -> uword {
+        @(0) = load_bank
+        uword segment_count = derefWord(load_addr + 8)
         uword i = 0
-        for i in 0 to palette_len {
-            vera.data0 = @(palette_start + i)
+        for i in 0 to segment_count * 6 {
+            dest[i] = load_addr[10 + i]
         }
+        return segment_count * 6
+    }
 
-        vera.setAddress(start_addr, vera.incr_1)
+    sub uploadVram() {
+        @(0) = load_bank
+        uword vram_start = derefWord(load_addr + 5);
+        ubyte vram_start_h = load_addr[7];
+        uploadVramTo(vram_start, vram_start_h)
+    }
+
+    sub uploadVramTo(uword addr, ubyte addr_h) {
+        @(0) = load_bank
+        uword data_start = derefWord(load_addr + 0)
+        uword data_len = derefWord(load_addr + 2)
+        ubyte data_len_h = load_addr[4]
+
+        cx16.VERA_ADDR_L = (addr & $ff) as ubyte
+        cx16.VERA_ADDR_M = ((addr >> 8) & $ff) as ubyte
+        cx16.VERA_ADDR_H = $10 + (addr_h & 1)
 
         uword p = data_start
+        repeat data_len_h {
+            repeat 256 {
+                repeat 256 {
+                    cx16.VERA_DATA0 = @(p)
+                    p += 1
+                    if (p == $c000) {
+                        p = $a000
+                        @(0) += 1
+                    }
+                }
+            }
+        }
         repeat data_len {
-            vera.data0 = @(p)
+            cx16.VERA_DATA0 = @(p)
             p += 1
-            if p == $bfff {
+            if (p == $c000) {
                 p = $a000
                 @(0) += 1
             }
         }
-
+        @(0) = load_bank
     }
 
-    sub getEntryAddress(uword entry) -> uword {
-        cx16.rambank(load_bank)
-        return @(entries_start + entry * 2) as uword + (@(entries_start + entry * 2 + 1) as uword << 8)
+    sub derefWord(uword ptr) -> uword {
+        return (ptr[0] as uword) + (ptr[1] as uword << 8)
     }
 
 }

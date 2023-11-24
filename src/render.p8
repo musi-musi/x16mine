@@ -1,6 +1,7 @@
 %import vera
 %import level
 %import veradat
+%import vram
 
 render {
 
@@ -64,8 +65,8 @@ render_level {
     sub initLayers() {
         uword i
 
-        wall_tile_base = veradat.getEntryAddress(0)
-        floor_tile_base = veradat.getEntryAddress(1)
+        wall_tile_base = vram.getSegmentStart(0)
+        floor_tile_base = vram.getSegmentStart(1)
 
         ; vera.setAddress(wall_tile_base, vera.incr_1)
         ; repeat bytes_per_tile_8 {
