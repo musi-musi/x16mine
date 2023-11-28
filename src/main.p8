@@ -64,6 +64,13 @@ irq {
         event_vsync = 0
     }
 
+    sub waitForScanline(uword scanline) {
+        spin:
+        if vera.getScanline() != scanline {
+            goto spin
+        }
+    }
+
     sub vsync() {
         event_vsync = 1
         return

@@ -9,7 +9,7 @@
                 "height": 8,
                 "alignment": "tile",
                 "files": [
-                    "wall_empty.png",
+                    "empty8.png",
                     "wall_tiles_flat.png",
                     "wall_tiles.png"
                 ]
@@ -21,6 +21,7 @@
                 "height": 16,
                 "alignment": "tile",
                 "files": [
+                    "empty16.png",
                     "floor_tiles.png"
                 ]
             },

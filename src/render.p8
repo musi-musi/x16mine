@@ -7,8 +7,8 @@ render {
 
     sub init() {
         vera.setDcsel(1)
-        vera.setVstart(16)
-        vera.setVstop(480-1 - 16 * 4)
+        ; vera.setVstart(16)
+        ; vera.setVstop(480-1 - 16 * 4)
         vera.setDcsel(0)
 
         render_level.initLayers()
@@ -29,7 +29,7 @@ render_level {
     const ubyte floor_map_height = 32
 
     const uword wall_map_base = $1000
-    const uword floor_map_base = $6000
+    const uword floor_map_base = $7000
     uword wall_tile_base
     uword floor_tile_base
 
@@ -43,9 +43,10 @@ render_level {
 
     sub enableLayers() {
         
-        ; vera.dc_video &= vera.disable_all
+        vera.dc_video &= vera.disable_all
         vera.dc_video |= vera.enable_layer0
         vera.dc_video |= vera.enable_layer1
+        vera.dc_video |= vera.enable_sprites
         vera.configLayer1(vera.map_128, vera.map_64, vera.tile_4bpp)
         vera.setMapBase1(wall_map_base)
         vera.setTileBase1(vera.tile_8, vera.tile_8, wall_tile_base)
@@ -68,35 +69,33 @@ render_level {
         wall_tile_base = vram.getSegmentStart(0)
         floor_tile_base = vram.getSegmentStart(1)
 
-        ; vera.setAddress(wall_tile_base, vera.incr_1)
-        ; repeat bytes_per_tile_8 {
-        ;     vera.data0 = 0
-        ; }
-        ; for i in 0 to wall_tiles_count * bytes_per_tile_8 * 4 {
-        ;     vera.data0 = @(&wall_tiles+i)
-        ; }
-
-        vera.setAddress(wall_map_base+1, vera.incr_2)
-        repeat wall_map_width {
-            repeat wall_map_height {
+        vera.setAddress(wall_map_base, vera.incr_1)
+        repeat level.room_height * 2 {
+            repeat wall_map_width {
+                vera.data0 = $00
                 vera.data0 = $40
             }
         }
-
-        ; vera.setAddress(floor_tile_base, vera.incr_1)
-        ; repeat bytes_per_tile_16 {
-        ;     vera.data0 = $44
-        ; }
-
-        ; for i in 0 to floor_tiles_count * bytes_per_tile_16 {
-        ;     vera.data0 = @(&floor_tiles+i)
-        ; }
+        uword remaining_rows = wall_map_height - level.room_height * 2
+        repeat remaining_rows {
+            repeat wall_map_width {
+                vera.data0 = 0
+                vera.data0 = 0
+            }
+        }
 
         vera.setAddress(floor_map_base, vera.incr_1)
-        repeat floor_map_width {
-            repeat floor_map_height {
-                vera.data0 = 0
+        repeat level.room_height {
+            repeat floor_map_width {
+                vera.data0 = 1
                 vera.data0 = $20
+            }
+        }
+        remaining_rows = floor_map_height - level.room_height
+        repeat remaining_rows {
+            repeat floor_map_width {
+                vera.data0 = 0
+                vera.data0 = 0
             }
         }
 
@@ -184,7 +183,7 @@ render_level {
 }
 
 render_hud {
-    sub initLayers() {
+    sub enableLayers() {
         vera.dc_video &= vera.disable_all
     }
 }
