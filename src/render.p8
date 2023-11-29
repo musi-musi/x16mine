@@ -28,8 +28,9 @@ render_level {
     const ubyte floor_map_width = 64
     const ubyte floor_map_height = 32
 
-    const uword wall_map_base = $1000
-    const uword floor_map_base = $7000
+    const uword wall_map_base = $8000
+    const uword wall_map_len = wall_map_width * wall_map_height * 2
+    const uword floor_map_base = wall_map_base + wall_map_len
     uword wall_tile_base
     uword floor_tile_base
 
@@ -73,7 +74,7 @@ render_level {
         repeat level.room_height * 2 {
             repeat wall_map_width {
                 vera.data0 = $00
-                vera.data0 = $40
+                vera.data0 = $10
             }
         }
         uword remaining_rows = wall_map_height - level.room_height * 2
@@ -104,9 +105,9 @@ render_level {
 
     sub drawRoom(ubyte room) {
         level.bankRoom(0)
-        vera.setAddress(wall_map_base, vera.incr_2)
+        ; vera.setAddress(wall_map_base, vera.incr_2)
         ubyte row
-        for row in 0 to level.room_height {
+        for row in 0 to level.room_height - 1 {
             drawRoomRow(row)
         }
     }
@@ -115,26 +116,26 @@ render_level {
         uword p = level.tiles + (row as uword) * level.room_width
         ubyte tile
         ubyte x
-        setAddrRowStart(row, 0, vera.incr_4)
+        setAddrRowStart(row, 0, vera.incr_1)
         x_incr = -1
         y_incr = -level.room_width
         x_limit = 0
         y_limit = 0
         drawRoomRowSubtile(p, row, 0)
 
-        setAddrRowStart(row, 1, vera.incr_4)
+        setAddrRowStart(row, 1, vera.incr_1)
         x_incr = 1
         x_limit = level.room_width-1
         drawRoomRowSubtile(p, row, 1)
 
-        setAddrRowStart(row, wall_map_width + 0, vera.incr_4)
+        setAddrRowStart(row, wall_map_width + 0, vera.incr_1)
         x_incr = -1
         y_incr = level.room_width
         x_limit = 0
         y_limit = level.room_height - 1
         drawRoomRowSubtile(p, row, 2)
 
-        setAddrRowStart(row, wall_map_width + 1, vera.incr_4)
+        setAddrRowStart(row, wall_map_width + 1, vera.incr_1)
         x_incr = 1
         x_limit = level.room_width-1
         drawRoomRowSubtile(p, row, 3)
@@ -148,6 +149,7 @@ render_level {
     sub drawRoomRowSubtile(uword p, ubyte row, ubyte subtile) {
         ubyte x
         ubyte tile
+        ubyte color = $1
         for x in 0 to level.room_width {
             if p[x] != 0 {
                 tile = 0
@@ -173,6 +175,8 @@ render_level {
             else {
                 vera.data0 = 0
             }
+            vera.data0 = color << 4
+            vera.addr += 2;
         }
     }
 
@@ -183,7 +187,5 @@ render_level {
 }
 
 render_hud {
-    sub enableLayers() {
-        vera.dc_video &= vera.disable_all
-    }
+    
 }

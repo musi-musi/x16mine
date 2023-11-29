@@ -10,7 +10,7 @@ player {
     const ubyte axis_x = 0
     const ubyte axis_y = 1
 
-    word[2] position = [(12 * 256) + 128, (5 * 256) + 128]
+    word[2] position = [(6 * 256) + 128, (21 * 256) + 128]
 
     const uword speed = 32
     const ubyte radius = 64

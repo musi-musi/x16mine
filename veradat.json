@@ -1,6 +1,9 @@
 [
     {
         "out_path": "vera.dat",
+        "header": {
+            "vram_start": "0x00000"
+        },
         "segments": [
             {
                 "name": "walls",
@@ -10,8 +13,8 @@
                 "alignment": "tile",
                 "files": [
                     "empty8.png",
-                    "wall_tiles_flat.png",
-                    "wall_tiles.png"
+                    "walls.png",
+                    "font8.png"
                 ]
             },
             {
@@ -49,6 +52,18 @@
                 "width": 8,
                 "height": 8,
                 "files": [ "palette.png" ]
+            }
+        ]
+    },
+    {
+        "out_path": "level.dat",
+        "header": null,
+        "segments": [
+            {
+                "color": 8,
+                "width": 40,
+                "height": 25,
+                "files": [ "level.png" ]
             }
         ]
     }
